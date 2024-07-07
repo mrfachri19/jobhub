@@ -7,15 +7,15 @@ const summaryRoutes  = require("../modules/summaries/summariesRoutes");
 const rekapJurnalRoutes  = require("../modules/rekap_jurnal/rekapJurnalRoutes");
 const rekapOlahragaRoutes  = require("../modules/rekap_olahraga/rekapOlahragaRoutes");
 const feedbackRoutes  = require("../modules/feedback/feedbackRoutes");
-const meditationRoutes  = require("../modules/meditation/meditationRoutes");
-const sportRoutes  = require("../modules/sport/sportRoutes");
+const voucherRoutes  = require("../modules/voucher/voucherRoutes");
+const orderRoutes  = require("../modules/order/orderRoutes");
 const posterRoutes = require("../modules/poster/posterRoutes") 
 
 Router.use("/auth", authRoutes);
 Router.use("/price", priceRoutes );
-Router.use("/sport", sportRoutes );
+Router.use("/order", orderRoutes );
 Router.use("/feedback", feedbackRoutes );
-Router.use("/meditation", meditationRoutes );
+Router.use("/voucher", voucherRoutes );
 Router.use("/summary", summaryRoutes );
 Router.use("/rekapjurnal", rekapJurnalRoutes );
 Router.use("/rekapolahraga", rekapOlahragaRoutes );

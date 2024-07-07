@@ -1,10 +1,10 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 const helperWrapper = require("../../helper/wrapper");
-const meditationModel = require("./meditationModel");
+const orderModel = require("./orderModel");
 
 module.exports = {
-  getAllMeditation: async (req, res) => {
+  getAllorder: async (req, res) => {
     try {
       let { page, limit, search, sort } = req.query;
       page = Number(page) || 1;
@@ -13,7 +13,7 @@ module.exports = {
       sort = sort || "created_at ASC";
       let offset = page * limit - limit;
 
-      const totalData = await meditationModel.getCountMeditation(search);
+      const totalData = await orderModel.getCountorder(search);
       const totalPage = Math.ceil(totalData / limit);
       if (totalPage < page) {
         offset = 0;
@@ -26,12 +26,7 @@ module.exports = {
         totalData,
       };
 
-      const result = await meditationModel.getAllMeditation(
-        limit,
-        offset,
-        search,
-        sort
-      );
+      const result = await orderModel.getAllorder(limit, offset, search, sort);
 
       if (result.length < 1) {
         return helperWrapper.response(res, 200, `Data not found!`, []);
@@ -53,10 +48,10 @@ module.exports = {
     }
   },
 
-  getMeditationById: async (req, res) => {
+  getorderById: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await meditationModel.getMeditationById(id);
+      const result = await orderModel.getorderById(id);
       if (result.length < 1) {
         return helperWrapper.response(
           res,
@@ -80,28 +75,40 @@ module.exports = {
       );
     }
   },
-  postMeditation: async (req, res) => {
+  postorder: async (req, res) => {
     try {
-      const { title, subtitle, description } = req.body;
+      const {
+        user_id,
+        price_id,
+        ig_ads,
+        wa_story,
+        voucer_id,
+        metode_pembayaran,
+        total,
+      } = req.body;
+      const images = req.files ? req.files.map((file) => file.filename) : [];
 
-      if (!title || !description) {
+      if (!metode_pembayaran) {
         return helperWrapper.response(
           res,
           400,
-          "Bad request (title and description are required)",
+          "Bad request (metode_pembayaran are required)",
           null
         );
       }
 
       const data = {
-        title,
-        subtitle,
-        description,
-        image: req.file ? req.file.filename : null, 
-        created_at: new Date(),
+        user_id,
+        price_id,
+        ig_ads,
+        wa_story,
+        voucer_id,
+        metode_pembayaran,
+        total,
+        image: JSON.stringify(images),
       };
 
-      const result = await meditationModel.postMeditation(data);
+      const result = await orderModel.postOrder(data);
 
       return helperWrapper.response(res, 200, "Success post data", result);
     } catch (error) {
@@ -113,25 +120,23 @@ module.exports = {
       );
     }
   },
-  updatemeditation: async (req, res) => {
+  updateorder: async (req, res) => {
     try {
       const { id } = req.params;
-      const { title, subtitle, description } = req.body;
+      const { name, description } = req.body;
 
-      if (!title || !description) {
+      if (!name || !description) {
         return helperWrapper.response(
           res,
           400,
-          "Bad request (title and description are required)",
+          "Bad request (user_id and notes are required)",
           null
         );
       }
 
       const data = {
-        title,
-        subtitle,
+        name,
         description,
-        image: req.file ? req.file.filename : null, 
         created_at: new Date(),
       };
       Object.keys(data).forEach((data) => {
@@ -139,7 +144,7 @@ module.exports = {
           delete data[data];
         }
       });
-      const result = await meditationModel.updatemeditation(id, data);
+      const result = await orderModel.updateorder(id, data);
 
       return helperWrapper.response(res, 200, "Success update data", result);
     } catch (error) {
@@ -151,11 +156,11 @@ module.exports = {
       );
     }
   },
-  deleteMeditation: async (req, res) => {
+  deleteorder: async (req, res) => {
     try {
       const { id } = req.params;
 
-      const result = await meditationModel.deleteMeditation(id);
+      const result = await orderModel.deleteorder(id);
 
       return helperWrapper.response(res, 200, "Success delete data", result);
     } catch (error) {

@@ -80,7 +80,7 @@ module.exports = {
         return helperWrapper.response(
           res,
           400,
-          "Bad request (title and author are required)",
+          "Bad request (nama and harga are required)",
           null
         );
       }

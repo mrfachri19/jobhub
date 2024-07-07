@@ -1,10 +1,10 @@
 /* eslint-disable guard-for-in */
 /* eslint-disable no-restricted-syntax */
 const helperWrapper = require("../../helper/wrapper");
-const sportModel = require("./sportModel");
+const voucherModel = require("./voucherModel");
 
 module.exports = {
-  getAllsport: async (req, res) => {
+  getAllvoucher: async (req, res) => {
     try {
       let { page, limit, search, sort } = req.query;
       page = Number(page) || 1;
@@ -13,7 +13,7 @@ module.exports = {
       sort = sort || "created_at ASC";
       let offset = page * limit - limit;
 
-      const totalData = await sportModel.getCountSport(search);
+      const totalData = await voucherModel.getCountVoucher(search);
       const totalPage = Math.ceil(totalData / limit);
       if (totalPage < page) {
         offset = 0;
@@ -26,7 +26,12 @@ module.exports = {
         totalData,
       };
 
-      const result = await sportModel.getAllSport(limit, offset, search, sort);
+      const result = await voucherModel.getAllVoucher(
+        limit,
+        offset,
+        search,
+        sort
+      );
 
       if (result.length < 1) {
         return helperWrapper.response(res, 200, `Data not found!`, []);
@@ -48,10 +53,10 @@ module.exports = {
     }
   },
 
-  getsportById: async (req, res) => {
+  getvoucherById: async (req, res) => {
     try {
       const { id } = req.params;
-      const result = await sportModel.getSportById(id);
+      const result = await voucherModel.getVoucherById(id);
       if (result.length < 1) {
         return helperWrapper.response(
           res,
@@ -75,26 +80,26 @@ module.exports = {
       );
     }
   },
-  postsport: async (req, res) => {
+  postvoucher: async (req, res) => {
     try {
-      const { name, description } = req.body;
+      const { price_id, name, harga } = req.body;
 
-      if (!name || !description) {
+      if (!name || !harga) {
         return helperWrapper.response(
           res,
           400,
-          "Bad request (user_id and notes are required)",
+          "Bad request (name and harga are required)",
           null
         );
       }
 
       const data = {
+        price_id,
         name,
-        description,
-        created_at: new Date(),
+        harga,
       };
 
-      const result = await sportModel.postSport(data);
+      const result = await voucherModel.postVoucher(data);
 
       return helperWrapper.response(res, 200, "Success post data", result);
     } catch (error) {
@@ -106,23 +111,25 @@ module.exports = {
       );
     }
   },
-  updatesport: async (req, res) => {
+  updatevoucher: async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, description } = req.body;
+      const { title, subtitle, description } = req.body;
 
-      if (!name || !description) {
+      if (!title || !description) {
         return helperWrapper.response(
           res,
           400,
-          "Bad request (user_id and notes are required)",
+          "Bad request (title and description are required)",
           null
         );
       }
 
       const data = {
-        name,
+        title,
+        subtitle,
         description,
+        image: req.file ? req.file.filename : null,
         created_at: new Date(),
       };
       Object.keys(data).forEach((data) => {
@@ -130,7 +137,7 @@ module.exports = {
           delete data[data];
         }
       });
-      const result = await sportModel.updateSport(id, data);
+      const result = await voucherModel.updateVoucher(id, data);
 
       return helperWrapper.response(res, 200, "Success update data", result);
     } catch (error) {
@@ -142,11 +149,11 @@ module.exports = {
       );
     }
   },
-  deletesport: async (req, res) => {
+  deletevoucher: async (req, res) => {
     try {
       const { id } = req.params;
 
-      const result = await sportModel.deleteSport(id);
+      const result = await voucherModel.deleteVoucher(id);
 
       return helperWrapper.response(res, 200, "Success delete data", result);
     } catch (error) {
